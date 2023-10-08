@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <utility>
 
 template <typename Type>
 class ArrayPtr {
@@ -27,12 +28,24 @@ public:
     // Запрещаем копирование
     ArrayPtr(const ArrayPtr&) = delete;
 
+    ArrayPtr(ArrayPtr&& other) noexcept {
+        raw_ptr_ = std::exchange(other.raw_ptr_, nullptr);
+    }
+
     ~ArrayPtr() {
         delete[] raw_ptr_;
     }
 
     // Запрещаем присваивание
     ArrayPtr& operator=(const ArrayPtr&) = delete;
+
+    ArrayPtr& operator=(ArrayPtr&& other) noexcept {
+        if (this != &other){
+            raw_ptr_ = std::exchange(other.raw_ptr_, nullptr);
+        }
+        return *this;
+
+    }
 
     [[nodiscard]] Type* Release() noexcept {
         auto* ptr = raw_ptr_;
@@ -62,7 +75,7 @@ public:
 
     // Обменивается значениям указателя на массив с объектом other
     void swap(ArrayPtr& other) noexcept {
-        std::swap(raw_ptr_, other.raw_ptr_);
+        std::swap(*this, other);
     }
 
 private:

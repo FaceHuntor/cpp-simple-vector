@@ -58,10 +58,12 @@ public:
     }
 
     Type& operator[](size_t index) noexcept {
+        assert(index < size_);
         return data_[index];
     }
 
     const Type& operator[](size_t index) const noexcept {
+        assert(index < size_);
         return data_[index];
     }
 
@@ -165,10 +167,14 @@ public:
     }
 
     void PopBack() noexcept {
+        if(IsEmpty()){
+            return;
+        }
         --size_;
     }
 
     Iterator Erase(ConstIterator pos) {
+        assert(pos >= begin() && pos < end());
         auto shift = pos - begin();
         std::copy(std::make_move_iterator(data_.Get() + shift + 1), std::make_move_iterator(data_.Get() + size_), data_.Get() + shift);
         --size_;
@@ -183,6 +189,7 @@ public:
 
 private:
     Iterator InsertInt(ConstIterator pos, Type&& value) {
+        assert(pos >= begin() && pos <= end());
         auto shift = pos - begin();
         if(size_ == capacity_){
             Recreate(!capacity_ ? 1 : capacity_ * 2, shift, std::move(value));
