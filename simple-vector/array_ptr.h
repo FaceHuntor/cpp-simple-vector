@@ -41,7 +41,7 @@ public:
 
     ArrayPtr& operator=(ArrayPtr&& other) noexcept {
         if (this != &other){
-            raw_ptr_ = std::exchange(other.raw_ptr_, nullptr);
+            std::swap(raw_ptr_, other.raw_ptr_);
         }
         return *this;
 
@@ -75,7 +75,7 @@ public:
 
     // Обменивается значениям указателя на массив с объектом other
     void swap(ArrayPtr& other) noexcept {
-        std::swap(*this, other);
+        std::swap(raw_ptr_, other.raw_ptr_);
     }
 
 private:
